@@ -1,33 +1,11 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  name: postgres-deployment
+  name: redis-cluster-ip-service
 spec:
-  replicas: 1
+  type: ClusterIP
   selector:
-    matchLabels:
-      component: postgres
-  template:
-    metadata:
-      labels:
-        component: postgres
-    spec:
-      volumes:
-        - name: postgres-storage
-          persistentVolumeClaim:
-            claimName: database-persistent-volume-claim
-      containers:
-        - name: postgres
-          image: postgres
-          ports:
-            - containerPort: 5432
-          volumeMounts:
-            - name: postgres-storage
-              mountPath: /var/lib/postgresql/data
-              subPath: postgres
-          env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgpassword
-                  key: POSTGRES_PASSWORD
+    component: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
